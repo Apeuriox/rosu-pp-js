@@ -132,36 +132,12 @@ impl<'de> de::Deserializer<'de> for JsDeserializer<'_> {
         }
     }
 
-    fn deserialize_i8<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
-    fn deserialize_i16<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
-    fn deserialize_i32<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
-    fn deserialize_i64<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
     fn deserialize_u8<V: de::Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
         self.deserialize_from_js_number_unsigned(visitor)
     }
 
-    fn deserialize_u16<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
     fn deserialize_u32<V: de::Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
         self.deserialize_from_js_number_unsigned(visitor)
-    }
-
-    fn deserialize_u64<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
     }
 
     fn deserialize_f32<V: de::Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
@@ -176,10 +152,6 @@ impl<'de> de::Deserializer<'de> for JsDeserializer<'_> {
         }
     }
 
-    fn deserialize_char<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
     fn deserialize_str<V: de::Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
         self.deserialize_string(visitor)
     }
@@ -190,10 +162,6 @@ impl<'de> de::Deserializer<'de> for JsDeserializer<'_> {
         } else {
             self.invalid_type(visitor)
         }
-    }
-
-    fn deserialize_bytes<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
     }
 
     fn deserialize_byte_buf<V: de::Visitor<'de>>(
@@ -215,26 +183,6 @@ impl<'de> de::Deserializer<'de> for JsDeserializer<'_> {
         }
     }
 
-    fn deserialize_unit<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
-    fn deserialize_unit_struct<V: de::Visitor<'de>>(
-        self,
-        _name: &'static str,
-        _: V,
-    ) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
-    fn deserialize_newtype_struct<V: de::Visitor<'de>>(
-        self,
-        _name: &'static str,
-        _: V,
-    ) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
     fn deserialize_seq<V: de::Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
         if let Some(arr) = self.value.dyn_ref::<Array>() {
             self.deserialize_from_array(visitor, arr)
@@ -243,23 +191,6 @@ impl<'de> de::Deserializer<'de> for JsDeserializer<'_> {
         } else {
             self.invalid_type(visitor)
         }
-    }
-
-    fn deserialize_tuple<V: de::Visitor<'de>>(
-        self,
-        _len: usize,
-        _: V,
-    ) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
-    fn deserialize_tuple_struct<V: de::Visitor<'de>>(
-        self,
-        _name: &'static str,
-        _len: usize,
-        _: V,
-    ) -> Result<V::Value, Self::Error> {
-        unimplemented!()
     }
 
     fn deserialize_map<V: de::Visitor<'de>>(self, visitor: V) -> Result<V::Value, Self::Error> {
@@ -287,15 +218,6 @@ impl<'de> de::Deserializer<'de> for JsDeserializer<'_> {
         visitor.visit_map(ObjectAccess::new(obj, fields))
     }
 
-    fn deserialize_enum<V: de::Visitor<'de>>(
-        self,
-        _name: &'static str,
-        _variants: &'static [&'static str],
-        _: V,
-    ) -> Result<V::Value, Self::Error> {
-        unimplemented!()
-    }
-
     fn deserialize_identifier<V: de::Visitor<'de>>(
         self,
         visitor: V,
@@ -303,8 +225,9 @@ impl<'de> de::Deserializer<'de> for JsDeserializer<'_> {
         self.deserialize_str(visitor)
     }
 
-    fn deserialize_ignored_any<V: de::Visitor<'de>>(self, _: V) -> Result<V::Value, Self::Error> {
-        unimplemented!()
+    serde::forward_to_deserialize_any! {
+        i8 i16 i32 i64 u16 u64 char bytes unit unit_struct
+        newtype_struct tuple tuple_struct enum ignored_any
     }
 }
 
@@ -394,7 +317,7 @@ impl<'js> ObjectAccess<'js> {
     }
 }
 
-fn str_deserializer(s: &str) -> de::value::StrDeserializer<JsError> {
+fn str_deserializer(s: &str) -> de::value::StrDeserializer<'_, JsError> {
     de::IntoDeserializer::into_deserializer(s)
 }
 
