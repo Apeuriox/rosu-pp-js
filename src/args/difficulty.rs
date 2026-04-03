@@ -46,16 +46,16 @@ pub struct DifficultyArgs {
     pub clock_rate: Option<f64>,
     pub ar: Option<f32>,
     #[serde(default)]
-    pub ar_with_mods: bool,
+    pub fixed_ar: bool,
     pub cs: Option<f32>,
     #[serde(default)]
-    pub cs_with_mods: bool,
+    pub fixed_cs: bool,
     pub hp: Option<f32>,
     #[serde(default)]
-    pub hp_with_mods: bool,
+    pub fixed_hp: bool,
     pub od: Option<f32>,
     #[serde(default)]
-    pub od_with_mods: bool,
+    pub fixed_od: bool,
     pub passed_objects: Option<u32>,
     pub hardrock_offsets: Option<bool>,
     pub lazer: Option<bool>,
@@ -74,19 +74,19 @@ impl DifficultyArgs {
         }
 
         if let Some(ar) = self.ar {
-            difficulty = difficulty.ar(ar, self.ar_with_mods);
+            difficulty = difficulty.ar(ar, self.fixed_ar);
         }
 
         if let Some(cs) = self.cs {
-            difficulty = difficulty.cs(cs, self.cs_with_mods);
+            difficulty = difficulty.cs(cs, self.fixed_cs);
         }
 
         if let Some(hp) = self.hp {
-            difficulty = difficulty.hp(hp, self.hp_with_mods);
+            difficulty = difficulty.hp(hp, self.fixed_hp);
         }
 
         if let Some(od) = self.od {
-            difficulty = difficulty.od(od, self.od_with_mods);
+            difficulty = difficulty.od(od, self.fixed_od);
         }
 
         if let Some(hardrock_offsets) = self.hardrock_offsets {

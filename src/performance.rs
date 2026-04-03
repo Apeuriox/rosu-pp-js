@@ -2,13 +2,14 @@ use rosu_pp::Performance;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
+    JsResult,
     args::performance::{
         JsHitResultPriority, JsMapOrAttributes, JsPerformanceArgs, MapOrAttrs, PerformanceArgs,
     },
     attributes::performance::JsPerformanceAttributes,
     deserializer::JsDeserializer,
     mods::JsGameMods,
-    util, JsResult,
+    util,
 };
 
 /// Builder for a performance calculation.
@@ -88,9 +89,9 @@ impl JsPerformance {
         self.args.ar = ar;
     }
 
-    #[wasm_bindgen(setter = arWithMods)]
-    pub fn set_ar_with_mods(&mut self, ar_with_mods: Option<bool>) {
-        self.args.ar_with_mods = ar_with_mods.unwrap_or_default();
+    #[wasm_bindgen(setter)]
+    pub fn set_fixed_ar(&mut self, fixed: Option<bool>) {
+        self.args.fixed_ar = fixed.unwrap_or_default();
     }
 
     #[wasm_bindgen(setter)]
@@ -98,9 +99,9 @@ impl JsPerformance {
         self.args.cs = cs;
     }
 
-    #[wasm_bindgen(setter = csWithMods)]
-    pub fn set_cs_with_mods(&mut self, cs_with_mods: Option<bool>) {
-        self.args.cs_with_mods = cs_with_mods.unwrap_or_default();
+    #[wasm_bindgen(setter)]
+    pub fn set_fixed_cs(&mut self, fixed: Option<bool>) {
+        self.args.fixed_cs = fixed.unwrap_or_default();
     }
 
     #[wasm_bindgen(setter)]
@@ -108,9 +109,9 @@ impl JsPerformance {
         self.args.hp = hp;
     }
 
-    #[wasm_bindgen(setter = hpWithMods)]
-    pub fn set_hp_with_mods(&mut self, hp_with_mods: Option<bool>) {
-        self.args.hp_with_mods = hp_with_mods.unwrap_or_default();
+    #[wasm_bindgen(setter)]
+    pub fn set_fixed_hp(&mut self, fixed: Option<bool>) {
+        self.args.fixed_hp = fixed.unwrap_or_default();
     }
 
     #[wasm_bindgen(setter)]
@@ -118,9 +119,9 @@ impl JsPerformance {
         self.args.od = od;
     }
 
-    #[wasm_bindgen(setter = odWithMods)]
-    pub fn set_od_with_mods(&mut self, od_with_mods: Option<bool>) {
-        self.args.od_with_mods = od_with_mods.unwrap_or_default();
+    #[wasm_bindgen(setter)]
+    pub fn set_fixed_od(&mut self, fixed: Option<bool>) {
+        self.args.fixed_od = fixed.unwrap_or_default();
     }
 
     #[wasm_bindgen(setter = passedObjects)]

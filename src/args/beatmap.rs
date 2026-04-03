@@ -86,16 +86,16 @@ pub struct BeatmapAttributesArgs {
     pub clock_rate: Option<f64>,
     pub ar: Option<f32>,
     #[serde(default)]
-    pub ar_with_mods: bool,
+    pub fixed_ar: bool,
     pub cs: Option<f32>,
     #[serde(default)]
-    pub cs_with_mods: bool,
+    pub fixed_cs: bool,
     pub hp: Option<f32>,
     #[serde(default)]
-    pub hp_with_mods: bool,
+    pub fixed_hp: bool,
     pub od: Option<f32>,
     #[serde(default)]
-    pub od_with_mods: bool,
+    pub fixed_od: bool,
     pub mode: Option<JsGameMode>,
     #[serde(default)]
     pub is_convert: bool,
@@ -120,19 +120,19 @@ impl BeatmapAttributesArgs {
         }
 
         if let Some(ar) = self.ar {
-            builder = builder.ar(ar, self.ar_with_mods);
+            builder = builder.ar(ar, self.fixed_ar);
         }
 
         if let Some(cs) = self.cs {
-            builder = builder.cs(cs, self.cs_with_mods);
+            builder = builder.cs(cs, self.fixed_cs);
         }
 
         if let Some(hp) = self.hp {
-            builder = builder.hp(hp, self.hp_with_mods);
+            builder = builder.hp(hp, self.fixed_hp);
         }
 
         if let Some(od) = self.od {
-            builder = builder.od(od, self.od_with_mods);
+            builder = builder.od(od, self.fixed_od);
         }
 
         builder

@@ -37,9 +37,7 @@ export interface CommonArgs {
     */
     clockRate?: number;
     /**
-    * Override a beatmap's set AR.
-    *
-    * Only relevant for osu! and osu!catch.
+    * Override a beatmap's approach rate.
     *
     * | Minimum | Maximum |
     * | :-----: | :-----: |
@@ -47,15 +45,13 @@ export interface CommonArgs {
     */
     ar?: number;
     /**
-    * Determines if the given AR value should be used before
-    * or after accounting for mods, e.g. on `true` the value will be
-    * used as is and on `false` it will be modified based on the mods.
+    * Determines if the given AR value should be used before or after accounting
+    * for mods, e.g. on `true` the value will be used as is and on `false` it
+    * will be modified based on the mods.
     */
-    arWithMods?: boolean;
+    fixedAr?: boolean;
     /**
-    * Override a beatmap's set CS.
-    *
-    * Only relevant for osu! and osu!catch.
+    * Override a beatmap's circle size.
     *
     * | Minimum | Maximum |
     * | :-----: | :-----: |
@@ -63,13 +59,13 @@ export interface CommonArgs {
     */
     cs?: number;
     /**
-    * Determines if the given CS value should be used before
-    * or after accounting for mods, e.g. on `true` the value will be
-    * used as is and on `false` it will be modified based on the mods.
+    * Determines if the given CS value should be used before or after accounting
+    * for mods, e.g. on `true` the value will be used as is and on `false` it
+    * will be modified based on the mods.
     */
-    csWithMods?: boolean;
+    fixedCs?: boolean;
     /**
-    * Override a beatmap's set HP.
+    * Override a beatmap's drain rate.
     *
     * | Minimum | Maximum |
     * | :-----: | :-----: |
@@ -77,13 +73,13 @@ export interface CommonArgs {
     */
     hp?: number;
     /**
-    * Determines if the given HP value should be used before
-    * or after accounting for mods, e.g. on `true` the value will be
-    * used as is and on `false` it will be modified based on the mods.
+    * Determines if the given HP value should be used before or after accounting
+    * for mods, e.g. on `true` the value will be used as is and on `false` it
+    * will be modified based on the mods.
     */
-    hpWithMods?: boolean;
+    fixedHp?: boolean;
     /**
-    * Override a beatmap's set OD.
+    * Override a beatmap's overall difficulty.
     *
     * | Minimum | Maximum |
     * | :-----: | :-----: |
@@ -91,9 +87,9 @@ export interface CommonArgs {
     */
     od?: number;
     /**
-    * Determines if the given OD value should be used before
-    * or after accounting for mods, e.g. on `true` the value will be
-    * used as is and on `false` it will be modified based on the mods.
+    * Determines if the given OD value should be used before or after accounting
+    * for mods, e.g. on `true` the value will be used as is and on `false` it
+    * will be modified based on the mods.
     */
-    odWithMods?: boolean;
+    fixedOd?: boolean;
 }"#;
