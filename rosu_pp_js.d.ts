@@ -316,6 +316,11 @@ export interface CommonArgs {
 }
 
 /**
+* The content of a `.osu` file either as bytes or string.
+*/
+export type BeatmapContent = Uint8Array | string;
+
+/**
 * Arguments to provide the `BeatmapAttributesBuilder` constructor.
 */
 export interface BeatmapAttributesArgs extends CommonArgs {
@@ -326,11 +331,6 @@ export interface BeatmapAttributesArgs extends CommonArgs {
     /** Start off with a beatmap's attributes, mode, and convert status. */
     map?: Beatmap | null;
 }
-
-/**
-* The content of a `.osu` file either as bytes or string.
-*/
-export type BeatmapContent = Uint8Array | string;
 
 /**
  * All beatmap data that is relevant for difficulty and performance
