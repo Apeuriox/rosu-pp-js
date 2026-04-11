@@ -469,10 +469,10 @@ export class BeatmapAttributesBuilder {
    * Calculate the `BeatmapAttributes`.
    */
   build(): BeatmapAttributes;
-  set fixed_ar(value: boolean | null | undefined);
-  set fixed_cs(value: boolean | null | undefined);
-  set fixed_hp(value: boolean | null | undefined);
-  set fixed_od(value: boolean | null | undefined);
+  set fixedAr(value: boolean | null | undefined);
+  set fixedCs(value: boolean | null | undefined);
+  set fixedHp(value: boolean | null | undefined);
+  set fixedOd(value: boolean | null | undefined);
   set clockRate(value: number | null | undefined);
   set isConvert(value: boolean | null | undefined);
   set ar(value: number | null | undefined);
@@ -511,10 +511,10 @@ export class Difficulty {
    * Perform the difficulty calculation.
    */
   calculate(map: Beatmap): DifficultyAttributes;
-  set fixed_ar(value: boolean | null | undefined);
-  set fixed_cs(value: boolean | null | undefined);
-  set fixed_hp(value: boolean | null | undefined);
-  set fixed_od(value: boolean | null | undefined);
+  set fixedAr(value: boolean | null | undefined);
+  set fixedCs(value: boolean | null | undefined);
+  set fixedHp(value: boolean | null | undefined);
+  set fixedOd(value: boolean | null | undefined);
   set clockRate(value: number | null | undefined);
   set passedObjects(value: number | null | undefined);
   set hardrockOffsets(value: boolean | null | undefined);
@@ -857,10 +857,10 @@ export class Performance {
   set nGeki(value: number | null | undefined);
   set nKatu(value: number | null | undefined);
   set accuracy(value: number | null | undefined);
-  set fixed_ar(value: boolean | null | undefined);
-  set fixed_cs(value: boolean | null | undefined);
-  set fixed_hp(value: boolean | null | undefined);
-  set fixed_od(value: boolean | null | undefined);
+  set fixedAr(value: boolean | null | undefined);
+  set fixedCs(value: boolean | null | undefined);
+  set fixedHp(value: boolean | null | undefined);
+  set fixedOd(value: boolean | null | undefined);
   set clockRate(value: number | null | undefined);
   set passedObjects(value: number | null | undefined);
   set sliderEndHits(value: number | null | undefined);
@@ -868,7 +868,7 @@ export class Performance {
   set largeTickHits(value: number | null | undefined);
   set smallTickHits(value: number | null | undefined);
   set hitresultPriority(value: HitResultPriority | null | undefined);
-  set legacy_total_score(value: number | null | undefined);
+  set legacyTotalScore(value: number | null | undefined);
   set ar(value: number | null | undefined);
   set cs(value: number | null | undefined);
   set hp(value: number | null | undefined);

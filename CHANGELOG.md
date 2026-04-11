@@ -1,4 +1,56 @@
-# v3.1.0 (2025-06-03)
+# v4.0.0 (2026-04-11)
+
+Updated all modes' difficulty and performance calculation. See osu!'s newspost for more info: <https://osu.ppy.sh/home/news/2025-10-29-performance-points-star-rating-updates>
+
+rosu-pp changelog: <https://github.com/MaxOhn/rosu-pp/blob/main/CHANGELOG.md#v400-2026-04-11>
+
+### Breaking
+
+- Bumped rosu-mods from 0.3.1 to 0.4.1
+- Bumped rosu-pp from 3.1.0 to 4.0.0
+- Removed variant `HitResultPriority.Fastest`
+- All properties and setters `*WithMods` have been renamed to `fixed*` (e.g.
+  `odWithMods` -> `fixedOd`)
+- Property `DifficultyAttributes.ar` is no longer set for osu!catch
+- Property `PerformanceAttributes.effectiveMissCount` is no longer set for
+  osu!taiko
+
+### Added
+
+- New enum `HitResultGenerator` with variants `Fast` (default) and `Closest`
+- Added the property `PerformanceArgs.hitresultGenerators` which is an optional
+  list of `HitResultGenerator | null` of length four, i.e. one for each mode.
+- New method `Performance.setHitresultGenerator` which takes a
+  `HitResultGenerator` and optionally a `GameMode`. If no mode is given, the
+  generator will be used for all modes.
+- Added the property `ScoreState.legacyTotalScore`. This is only relevant for
+  osu!standard scores on osu!stable (currently).
+- Added the property `PerformanceArgs.legacyTotalScore`
+- New properties for `DifficultyAttributes`
+  - `aimTopWeightedSliderFactor` (osu!)
+  - `speedTopWeightedSliderFactor` (osu!)
+  - `nestedScorePerObject` (osu!)
+  - `legacyScoreBaseMultiplier` (osu!)
+  - `maximumLegacyComboScore` (osu!)
+  - `preempt` (osu!catch)
+  - `mechanicalDifficulty` (osu!taiko)
+  - `consistencyFactor` (osu!taiko)
+- New properties for `PerformanceAttributes`
+  - `comboBasedEstimatedMissCount` (osu!)
+  - `scoreBasedEstimatedMissCount` (osu!)
+  - `aimEstimatedSliderBreaks` (osu!)
+  - `speedEstimatedSliderBreaks` (osu!)
+- New properties for `BeatmapAttributes`
+  - `baseAr` (approach rate without applied clock rate)
+  - `baseOd` (overall difficulty without applied clock rate)
+  - `odPerfectHitWindow` (only available for osu!mania)
+  - `odGoodHitWindow` (only available for osu!mania)
+
+### Fixed
+
+- Adjusted some type definitions by allowing `null`s
+
+## v3.1.0 (2025-06-03)
 
 Bumped to [`rosu-pp v3.1.0`](https://github.com/MaxOhn/rosu-pp/blob/main/CHANGELOG.md#v310-2025-06-03):
 - Added the method `Beatmap.isSuspicious`. 
