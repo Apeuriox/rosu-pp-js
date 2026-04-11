@@ -33,307 +33,304 @@ export enum HitResultPriority {
   WorstCase = 1,
 }
 /**
- * Arguments to provide the `Difficulty` constructor.
- */
+* Arguments to provide the `Difficulty` constructor.
+*/
 export interface ScoreState {
-  /**
-   * Maximum combo that the score has had so far. **Not** the maximum
-   * possible combo of the map so far.
-   *
-   * Note that for osu!catch only fruits and droplets are considered for
-   * combo.
-   *
-   * Irrelevant for osu!mania.
-   */
-  maxCombo?: number;
+    /**
+    * Maximum combo that the score has had so far. **Not** the maximum
+    * possible combo of the map so far.
+    *
+    * Note that for osu!catch only fruits and droplets are considered for
+    * combo.
+    *
+    * Irrelevant for osu!mania.
+    */
+    maxCombo?: number;
 
-  /**
-   * "Large tick" hits for osu!standard.
-   *
-   * The meaning depends on the kind of score:
-   * - if set on osu!stable, this field is irrelevant and can be `0`
-   * - if set on osu!lazer *without* `CL`, this field is the amount of hit
-   *   slider ticks and repeats
-   * - if set on osu!lazer *with* `CL`, this field is the amount of hit
-   *   slider heads, ticks, and repeats
-   */
-  osuLargeTickHits?: number;
+    /**
+    * "Large tick" hits for osu!standard.
+    *
+    * The meaning depends on the kind of score:
+    * - if set on osu!stable, this field is irrelevant and can be `0`
+    * - if set on osu!lazer *without* `CL`, this field is the amount of hit
+    *   slider ticks and repeats
+    * - if set on osu!lazer *with* `CL`, this field is the amount of hit
+    *   slider heads, ticks, and repeats
+    */
+    osuLargeTickHits?: number;
 
-  /**
-   * "Small tick" hits for osu!standard.
-   *
-   * These are essentially the slider end hits for lazer scores without
-   * slider accuracy.
-   *
-   * Only relevant for osu!lazer.
-   */
-  osuSmallTickHits?: number;
+    /**
+    * "Small tick" hits for osu!standard.
+    *
+    * These are essentially the slider end hits for lazer scores without
+    * slider accuracy.
+    *
+    * Only relevant for osu!lazer.
+    */
+    osuSmallTickHits?: number;
 
-  /**
-   * Amount of successfully hit slider ends.
-   *
-   * Only relevant for osu!standard in lazer.
-   */
-  sliderEndHits?: number;
+    /**
+    * Amount of successfully hit slider ends.
+    *
+    * Only relevant for osu!standard in lazer.
+    */
+    sliderEndHits?: number;
 
-  /**
-   * Amount of current gekis (n320 for osu!mania).
-   */
-  nGeki?: number;
-  /**
-   * Amount of current katus (tiny droplet misses for osu!catch / n200 for
-   * osu!mania).
-   */
-  nKatu?: number;
-  /**
-   * Amount of current 300s (fruits for osu!catch).
-   */
-  n300?: number;
-  /**
-   * Amount of current 100s (droplets for osu!catch).
-   */
-  n100?: number;
-  /**
-   * Amount of current 50s (tiny droplets for osu!catch).
-   */
-  n50?: number;
-  /**
-   * Amount of current misses (fruits + droplets for osu!catch).
-   */
-  misses?: number;
-  /**
-   * Legacy total score.
-   *
-   * Only relevant for osu!stable
-   */
-  legacyTotalScore?: number | null;
+    /**
+    * Amount of current gekis (n320 for osu!mania).
+    */
+    nGeki?: number;
+    /**
+    * Amount of current katus (tiny droplet misses for osu!catch / n200 for
+    * osu!mania).
+    */
+    nKatu?: number;
+    /**
+    * Amount of current 300s (fruits for osu!catch).
+    */
+    n300?: number;
+    /**
+    * Amount of current 100s (droplets for osu!catch).
+    */
+    n100?: number;
+    /**
+    * Amount of current 50s (tiny droplets for osu!catch).
+    */
+    n50?: number;
+    /**
+    * Amount of current misses (fruits + droplets for osu!catch).
+    */
+    misses?: number;
+    /**
+    * Legacy total score.
+    *
+    * Only relevant for osu!stable
+    */
+    legacyTotalScore?: number | null;
 }
 
 /**
- * Arguments to provide the `Difficulty` constructor.
- */
+* Arguments to provide the `Difficulty` constructor.
+*/
 export interface DifficultyArgs extends CommonArgs {
-  /**
-   * Amount of passed objects for partial plays, e.g. a fail.
-   *
-   * If you want to calculate the difficulty after every few objects,
-   * instead of using `Difficulty` multiple times with different
-   * `passedObjects`, you should use `GradualDifficulty`.
-   */
-  passedObjects?: number | null;
-  /**
-   * Adjust patterns as if the HR mod is enabled.
-   *
-   * Only relevant for osu!catch.
-   */
-  hardrockOffsets?: boolean | null;
-  /**
-   * Whether the calculated attributes belong to an osu!lazer or osu!stable
-   * score.
-   *
-   * Defaults to `true`.
-   */
-  lazer?: boolean | null;
+    /**
+    * Amount of passed objects for partial plays, e.g. a fail.
+    *
+    * If you want to calculate the difficulty after every few objects,
+    * instead of using `Difficulty` multiple times with different
+    * `passedObjects`, you should use `GradualDifficulty`.
+    */
+    passedObjects?: number | null;
+    /**
+    * Adjust patterns as if the HR mod is enabled.
+    *
+    * Only relevant for osu!catch.
+    */
+    hardrockOffsets?: boolean | null;
+    /**
+    * Whether the calculated attributes belong to an osu!lazer or osu!stable
+    * score.
+    *
+    * Defaults to `true`.
+    */
+    lazer?: boolean | null;
 }
 
 /**
- * Either previously calculated attributes or a beatmap.
- */
-export type MapOrAttributes =
-  | DifficultyAttributes
-  | PerformanceAttributes
-  | Beatmap;
-
-/**
- * Arguments to provide the `Performance` constructor.
- */
+* Arguments to provide the `Performance` constructor.
+*/
 export interface PerformanceArgs extends DifficultyArgs {
-  /** Set the accuracy between `0.0` and `100.0`. */
-  accuracy?: number | null;
-  /**
-   * Specify the max combo of the play.
-   *
-   * Irrelevant for osu!mania.
-   */
-  combo?: number | null;
-  /**
-   * The amount of "large tick" hits.
-   *
-   * Only relevant for osu!.
-   *
-   * The meaning depends on the kind of score:
-   * - if set on osu!stable, this value is irrelevant and can be `0`
-   * - if set on osu!lazer *without* `CL`, this value is the amount of hit
-   *   slider ticks and repeats
-   * - if set on osu!lazer *with* `CL`, this value is the amount of hit
-   *   slider heads, ticks, and repeats
-   */
-  largeTickHits?: number | null;
-  /**
-   * The amount of "small tick" hits.
-   *
-   * These are essentially the slider end hits for lazer scores without
-   * slider accuracy.
-   *
-   * Only relevant for osu!.
-   */
-  smallTickHits?: number | null;
-  /**
-   * The amount of slider end hits.
-   *
-   * Only relevant for osu! in lazer.
-   */
-  sliderEndHits?: number | null;
-  /**
-   * Specify the amount of gekis of a play.
-   *
-   * Only relevant for osu!mania for which it repesents the amount of n320.
-   */
-  nGeki?: number | null;
-  /**
-   * Specify the amount of katus of a play.
-   *
-   * Only relevant for osu!catch for which it represents the amount of tiny
-   * droplet misses and osu!mania for which it repesents the amount of n200.
-   */
-  nKatu?: number | null;
-  /** Specify the amount of 300s of a play. */
-  n300?: number | null;
-  /** Specify the amount of 100s of a play. */
-  n100?: number | null;
-  /**
-   * Specify the amount of 50s of a play.
-   *
-   * Irrelevant for osu!taiko.
-   */
-  n50?: number | null;
-  /** Specify the amount of misses of a play. */
-  misses?: number | null;
-  /**
-   * Specify the legacy total score.
-   *
-   * Only relevant for osu!.
-   */
-  legacyTotalScore?: number | null;
-  /**
-   * Specify how hitresults should be generated.
-   *
-   * Defaults to `HitResultPriority.BestCase`.
-   */
-  hitresultPriority?: HitResultPriority;
-  /** Four optional generators; one for each mode. */
-  hitresultGenerators?: Array<HitResultGenerator | null> | null;
+    /** Set the accuracy between `0.0` and `100.0`. */
+    accuracy?: number | null;
+    /**
+    * Specify the max combo of the play.
+    *
+    * Irrelevant for osu!mania.
+    */
+    combo?: number | null;
+    /**
+    * The amount of "large tick" hits.
+    *
+    * Only relevant for osu!.
+    *
+    * The meaning depends on the kind of score:
+    * - if set on osu!stable, this value is irrelevant and can be `0`
+    * - if set on osu!lazer *without* `CL`, this value is the amount of hit
+    *   slider ticks and repeats
+    * - if set on osu!lazer *with* `CL`, this value is the amount of hit
+    *   slider heads, ticks, and repeats
+    */
+    largeTickHits?: number | null;
+    /**
+    * The amount of "small tick" hits.
+    *
+    * These are essentially the slider end hits for lazer scores without
+    * slider accuracy.
+    *
+    * Only relevant for osu!.
+    */
+    smallTickHits?: number | null;
+    /**
+    * The amount of slider end hits.
+    *
+    * Only relevant for osu! in lazer.
+    */
+    sliderEndHits?: number | null;
+    /**
+    * Specify the amount of gekis of a play.
+    *
+    * Only relevant for osu!mania for which it repesents the amount of n320.
+    */
+    nGeki?: number | null;
+    /**
+    * Specify the amount of katus of a play.
+    *
+    * Only relevant for osu!catch for which it represents the amount of tiny
+    * droplet misses and osu!mania for which it repesents the amount of n200.
+    */
+    nKatu?: number | null;
+    /** Specify the amount of 300s of a play. */
+    n300?: number | null;
+    /** Specify the amount of 100s of a play. */
+    n100?: number | null;
+    /**
+    * Specify the amount of 50s of a play.
+    *
+    * Irrelevant for osu!taiko.
+    */
+    n50?: number | null;
+    /** Specify the amount of misses of a play. */
+    misses?: number | null;
+    /**
+    * Specify the legacy total score.
+    *
+    * Only relevant for osu!.
+    */
+    legacyTotalScore?: number | null;
+    /**
+    * Specify how hitresults should be generated.
+    *
+    * Defaults to `HitResultPriority.BestCase`.
+    */
+    hitresultPriority?: HitResultPriority;
+    /** Four optional generators; one for each mode. */
+    hitresultGenerators?: Array<(HitResultGenerator | null)> | null;
 }
 
 /**
- * Common properties to extend other argument interfaces.
- */
+* Either previously calculated attributes or a beatmap.
+*/
+export type MapOrAttributes = DifficultyAttributes | PerformanceAttributes | Beatmap;
+
+/**
+* Common properties to extend other argument interfaces.
+*/
 export interface CommonArgs {
-  /**
-   * Specify mods.
-   *
-   * The type must be either
-   *   - an integer for bitflags
-   *   - a string for acronyms
-   *   - a single mod object as described below
-   *   - a sequence of types that deserialize into a single mod
-   *
-   * Types that deserialize into a single mod are
-   *   - an integer for bitflags
-   *   - a string for an acronym
-   *   - a mod object
-   *
-   * A mod object must have an `acronym: string` property and an optional
-   * `settings?: Object` property.
-   *
-   * See <https://github.com/ppy/osu-api/wiki#mods>
-   */
-  mods?: Object;
-  /**
-   * Adjust the clock rate used in the calculation.
-   *
-   * If none is specified, it will take the clock rate based on the mods
-   * i.e. 1.5 for DT, 0.75 for HT and 1.0 otherwise.
-   *
-   * | Minimum | Maximum |
-   * | :-----: | :-----: |
-   * | 0.01    | 100     |
-   */
-  clockRate?: number | null;
-  /**
-   * Override a beatmap's approach rate.
-   *
-   * | Minimum | Maximum |
-   * | :-----: | :-----: |
-   * | -20     | 20      |
-   */
-  ar?: number | null;
-  /**
-   * Determines if the given AR value should be used before or after accounting
-   * for mods, e.g. on `true` the value will be used as is and on `false` it
-   * will be modified based on the mods.
-   */
-  fixedAr?: boolean;
-  /**
-   * Override a beatmap's circle size.
-   *
-   * | Minimum | Maximum |
-   * | :-----: | :-----: |
-   * | -20     | 20      |
-   */
-  cs?: number | null;
-  /**
-   * Determines if the given CS value should be used before or after accounting
-   * for mods, e.g. on `true` the value will be used as is and on `false` it
-   * will be modified based on the mods.
-   */
-  fixedCs?: boolean;
-  /**
-   * Override a beatmap's drain rate.
-   *
-   * | Minimum | Maximum |
-   * | :-----: | :-----: |
-   * | -20     | 20      |
-   */
-  hp?: number | null;
-  /**
-   * Determines if the given HP value should be used before or after accounting
-   * for mods, e.g. on `true` the value will be used as is and on `false` it
-   * will be modified based on the mods.
-   */
-  fixedHp?: boolean;
-  /**
-   * Override a beatmap's overall difficulty.
-   *
-   * | Minimum | Maximum |
-   * | :-----: | :-----: |
-   * | -20     | 20      |
-   */
-  od?: number | null;
-  /**
-   * Determines if the given OD value should be used before or after accounting
-   * for mods, e.g. on `true` the value will be used as is and on `false` it
-   * will be modified based on the mods.
-   */
-  fixedOd?: boolean;
+    /**
+    * Specify mods.
+    *
+    * The type must be either
+    *   - an integer for bitflags
+    *   - a string for acronyms
+    *   - a single mod object as described below
+    *   - a sequence of types that deserialize into a single mod
+    *
+    * Types that deserialize into a single mod are
+    *   - an integer for bitflags
+    *   - a string for an acronym
+    *   - a mod object
+    *
+    * A mod object must have an `acronym: string` property and an optional
+    * `settings?: Object` property.
+    *
+    * See <https://github.com/ppy/osu-api/wiki#mods>
+    */
+    mods?: Object;
+    /**
+    * Adjust the clock rate used in the calculation.
+    *
+    * If none is specified, it will take the clock rate based on the mods
+    * i.e. 1.5 for DT, 0.75 for HT and 1.0 otherwise.
+    *
+    * | Minimum | Maximum |
+    * | :-----: | :-----: |
+    * | 0.01    | 100     |
+    */
+    clockRate?: number | null;
+    /**
+    * Override a beatmap's approach rate.
+    *
+    * | Minimum | Maximum |
+    * | :-----: | :-----: |
+    * | -20     | 20      |
+    */
+    ar?: number | null;
+    /**
+    * Determines if the given AR value should be used before or after accounting
+    * for mods, e.g. on `true` the value will be used as is and on `false` it
+    * will be modified based on the mods.
+    */
+    fixedAr?: boolean;
+    /**
+    * Override a beatmap's circle size.
+    *
+    * | Minimum | Maximum |
+    * | :-----: | :-----: |
+    * | -20     | 20      |
+    */
+    cs?: number | null;
+    /**
+    * Determines if the given CS value should be used before or after accounting
+    * for mods, e.g. on `true` the value will be used as is and on `false` it
+    * will be modified based on the mods.
+    */
+    fixedCs?: boolean;
+    /**
+    * Override a beatmap's drain rate.
+    *
+    * | Minimum | Maximum |
+    * | :-----: | :-----: |
+    * | -20     | 20      |
+    */
+    hp?: number | null;
+    /**
+    * Determines if the given HP value should be used before or after accounting
+    * for mods, e.g. on `true` the value will be used as is and on `false` it
+    * will be modified based on the mods.
+    */
+    fixedHp?: boolean;
+    /**
+    * Override a beatmap's overall difficulty.
+    *
+    * | Minimum | Maximum |
+    * | :-----: | :-----: |
+    * | -20     | 20      |
+    */
+    od?: number | null;
+    /**
+    * Determines if the given OD value should be used before or after accounting
+    * for mods, e.g. on `true` the value will be used as is and on `false` it
+    * will be modified based on the mods.
+    */
+    fixedOd?: boolean;
 }
 
 /**
- * The content of a `.osu` file either as bytes or string.
- */
-export type BeatmapContent = Uint8Array | string;
-
-/**
- * Arguments to provide the `BeatmapAttributesBuilder` constructor.
- */
+* Arguments to provide the `BeatmapAttributesBuilder` constructor.
+*/
 export interface BeatmapAttributesArgs extends CommonArgs {
-  /** Specify a gamemode. */
-  mode?: GameMode | null;
-  /** Specify whether it's a converted map. */
-  isConvert?: boolean;
-  /** Start off with a beatmap's attributes, mode, and convert status. */
-  map?: Beatmap | null;
+    /** Specify a gamemode. */
+    mode?: GameMode | null;
+    /** Specify whether it's a converted map. */
+    isConvert?: boolean;
+    /** Start off with a beatmap's attributes, mode, and convert status. */
+    map?: Beatmap | null;
 }
+
+/**
+* The content of a `.osu` file either as bytes or string.
+*/
+export type BeatmapContent = Uint8Array | string;
 
 /**
  * All beatmap data that is relevant for difficulty and performance
@@ -383,13 +380,13 @@ export class Beatmap {
 }
 export class BeatmapAttributes {
   private constructor();
-  /**
-   ** Return copy of self without private attributes.
-   */
+/**
+** Return copy of self without private attributes.
+*/
   toJSON(): Object;
-  /**
-   * Return stringified version of self.
-   */
+/**
+* Return stringified version of self.
+*/
   toString(): string;
   free(): void;
   /**
@@ -533,13 +530,13 @@ export class Difficulty {
  */
 export class DifficultyAttributes {
   private constructor();
-  /**
-   ** Return copy of self without private attributes.
-   */
+/**
+** Return copy of self without private attributes.
+*/
   toJSON(): Object;
-  /**
-   * Return stringified version of self.
-   */
+/**
+* Return stringified version of self.
+*/
   toString(): string;
   free(): void;
   /**
@@ -838,10 +835,7 @@ export class GradualPerformance {
  */
 export class Performance {
   free(): void;
-  setHitresultGenerator(
-    hitresult_generator?: HitResultGenerator | null,
-    mode?: GameMode | null,
-  ): void;
+  setHitresultGenerator(hitresult_generator?: HitResultGenerator | null, mode?: GameMode | null): void;
   /**
    * Create a new performance calculator.
    */
@@ -891,13 +885,13 @@ export class Performance {
  */
 export class PerformanceAttributes {
   private constructor();
-  /**
-   ** Return copy of self without private attributes.
-   */
+/**
+** Return copy of self without private attributes.
+*/
   toJSON(): Object;
-  /**
-   * Return stringified version of self.
-   */
+/**
+* Return stringified version of self.
+*/
   toString(): string;
   free(): void;
   /**
@@ -974,13 +968,13 @@ export class PerformanceAttributes {
  */
 export class Strains {
   private constructor();
-  /**
-   ** Return copy of self without private attributes.
-   */
+/**
+** Return copy of self without private attributes.
+*/
   toJSON(): Object;
-  /**
-   * Return stringified version of self.
-   */
+/**
+* Return stringified version of self.
+*/
   toString(): string;
   free(): void;
   /**
