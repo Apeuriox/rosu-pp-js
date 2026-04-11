@@ -85,7 +85,7 @@ impl JsDifficulty {
         self.args.ar = ar;
     }
 
-    #[wasm_bindgen(setter)]
+    #[wasm_bindgen(setter = "fixedAr")]
     pub fn set_fixed_ar(&mut self, fixed: Option<bool>) {
         self.args.fixed_ar = fixed.unwrap_or_default();
     }
@@ -95,7 +95,7 @@ impl JsDifficulty {
         self.args.cs = cs;
     }
 
-    #[wasm_bindgen(setter)]
+    #[wasm_bindgen(setter = "fixedCs")]
     pub fn set_fixed_cs(&mut self, fixed: Option<bool>) {
         self.args.fixed_cs = fixed.unwrap_or_default();
     }
@@ -105,7 +105,7 @@ impl JsDifficulty {
         self.args.hp = hp;
     }
 
-    #[wasm_bindgen(setter)]
+    #[wasm_bindgen(setter = "fixedHp")]
     pub fn set_fixed_hp(&mut self, fixed: Option<bool>) {
         self.args.fixed_hp = fixed.unwrap_or_default();
     }
@@ -115,7 +115,7 @@ impl JsDifficulty {
         self.args.od = od;
     }
 
-    #[wasm_bindgen(setter)]
+    #[wasm_bindgen(setter = "fixedOd")]
     pub fn set_fixed_od(&mut self, fixed: Option<bool>) {
         self.args.fixed_od = fixed.unwrap_or_default();
     }
