@@ -1,7 +1,10 @@
 use rosu_mods::GameMods;
 use rosu_pp::{
     Performance,
-    any::{DifficultyAttributes, HitResultPriority},
+    any::{
+        DifficultyAttributes, HitResultPriority,
+        hitresult_generator::{Closest, Composable, Fast},
+    },
 };
 use serde::de;
 use wasm_bindgen::{__rt::RcRef, JsValue, prelude::wasm_bindgen};
@@ -30,20 +33,18 @@ const _: &'static str = r#"/**
 * Arguments to provide the `Performance` constructor.
 */
 export interface PerformanceArgs extends DifficultyArgs {
-    /**
-    * Set the accuracy between `0.0` and `100.0`.
-    */
-    accuracy?: number;
+    /** Set the accuracy between `0.0` and `100.0`. */
+    accuracy?: number | null;
     /**
     * Specify the max combo of the play.
     *
     * Irrelevant for osu!mania.
     */
-    combo?: number;
+    combo?: number | null;
     /**
     * The amount of "large tick" hits.
     *
-    * Only relevant for osu!standard.
+    * Only relevant for osu!.
     *
     * The meaning depends on the kind of score:
     * - if set on osu!stable, this value is irrelevant and can be `0`
@@ -52,59 +53,61 @@ export interface PerformanceArgs extends DifficultyArgs {
     * - if set on osu!lazer *with* `CL`, this value is the amount of hit
     *   slider heads, ticks, and repeats
     */
-    largeTickHits?: number;
+    largeTickHits?: number | null;
     /**
     * The amount of "small tick" hits.
     *
     * These are essentially the slider end hits for lazer scores without
     * slider accuracy.
     *
-    * Only relevant for osu!standard.
+    * Only relevant for osu!.
     */
-    smallTickHits?: number;
+    smallTickHits?: number | null;
     /**
     * The amount of slider end hits.
     *
-    * Only relevant for osu!standard in lazer.
+    * Only relevant for osu! in lazer.
     */
-    sliderEndHits?: number;
+    sliderEndHits?: number | null;
     /**
     * Specify the amount of gekis of a play.
     *
     * Only relevant for osu!mania for which it repesents the amount of n320.
     */
-    nGeki?: number;
+    nGeki?: number | null;
     /**
     * Specify the amount of katus of a play.
     *
     * Only relevant for osu!catch for which it represents the amount of tiny
     * droplet misses and osu!mania for which it repesents the amount of n200.
     */
-    nKatu?: number;
-    /**
-    * Specify the amount of 300s of a play.
-    */
-    n300?: number;
-    /**
-    * Specify the amount of 100s of a play.
-    */
-    n100?: number;
+    nKatu?: number | null;
+    /** Specify the amount of 300s of a play. */
+    n300?: number | null;
+    /** Specify the amount of 100s of a play. */
+    n100?: number | null;
     /**
     * Specify the amount of 50s of a play.
     *
     * Irrelevant for osu!taiko.
     */
-    n50?: number;
+    n50?: number | null;
+    /** Specify the amount of misses of a play. */
+    misses?: number | null;
     /**
-    * Specify the amount of misses of a play.
+    * Specify the legacy total score.
+    *
+    * Only relevant for osu!.
     */
-    misses?: number;
+    legacyTotalScore?: number | null;
     /**
     * Specify how hitresults should be generated.
     *
     * Defaults to `HitResultPriority.BestCase`.
     */
     hitresultPriority?: HitResultPriority;
+    /** Four optional generators; one for each mode. */
+    hitresultGenerators?: Array<(HitResultGenerator | null)> | null;
 }"#;
 
 #[derive(Default, serde::Deserialize)]
@@ -139,8 +142,11 @@ pub struct PerformanceArgs {
     pub n100: Option<u32>,
     pub n50: Option<u32>,
     pub misses: Option<u32>,
+    pub legacy_total_score: Option<u32>,
     #[serde(default, deserialize_with = "JsHitResultPriority::deserialize")]
     pub hitresult_priority: HitResultPriority,
+    #[serde(default, deserialize_with = "JsHitResultGenerator::deserialize")]
+    pub hitresult_generators: [Option<JsHitResultGenerator>; 4],
 }
 
 /// While generating remaining hitresults, decide how they should be distributed.
@@ -151,8 +157,6 @@ pub enum JsHitResultPriority {
     BestCase,
     /// Prioritize bad hitresults over good ones
     WorstCase,
-    /// Prioritize fast hitresults generation
-    Fastest,
 }
 
 impl From<JsHitResultPriority> for HitResultPriority {
@@ -160,7 +164,6 @@ impl From<JsHitResultPriority> for HitResultPriority {
         match priority {
             JsHitResultPriority::BestCase => Self::BestCase,
             JsHitResultPriority::WorstCase => Self::WorstCase,
-            JsHitResultPriority::Fastest => Self::Fastest,
         }
     }
 }
@@ -170,7 +173,6 @@ impl JsHitResultPriority {
         let priority = match <u8 as de::Deserialize>::deserialize(d) {
             Ok(0) => HitResultPriority::BestCase,
             Ok(1) => HitResultPriority::WorstCase,
-            Ok(2) => HitResultPriority::Fastest,
             _ => return Err(de::Error::custom("invalid HitResultPriority")),
         };
 
@@ -178,69 +180,172 @@ impl JsHitResultPriority {
     }
 }
 
+/// A specific implementation of hitresult generation.
+#[wasm_bindgen(js_name = HitResultGenerator)]
+#[derive(Copy, Clone)]
+pub enum JsHitResultGenerator {
+    /// Prioritize generating hitresults quickly.
+    Fast,
+    /// Find the hitresults that match the given accuracy the closest.
+    Closest,
+}
+
+impl JsHitResultGenerator {
+    fn deserialize<'de, D: de::Deserializer<'de>>(d: D) -> Result<[Option<Self>; 4], D::Error> {
+        <Option<[Option<u8>; 4]> as de::Deserialize>::deserialize(d)
+            .ok()
+            .unwrap_or_default()
+            .and_then(|generators| {
+                let mut all_valid = true;
+
+                let generators = generators.map(|opt| match opt {
+                    Some(0) => Some(Self::Fast),
+                    Some(1) => Some(Self::Closest),
+                    _ => {
+                        all_valid = false;
+
+                        None
+                    }
+                });
+
+                all_valid.then_some(generators)
+            })
+            .ok_or_else(|| {
+                de::Error::custom(
+                    "invalid hitresult generators, expected list of four optional generators",
+                )
+            })
+    }
+}
+
 impl PerformanceArgs {
     pub fn apply<'a>(&self, mut perf: Performance<'a>) -> Performance<'a> {
-        if let Some(accuracy) = self.accuracy {
-            perf = perf.accuracy(accuracy);
+        let Self {
+            mods,
+            clock_rate,
+            ar,
+            fixed_ar,
+            cs,
+            fixed_cs,
+            hp,
+            fixed_hp,
+            od,
+            fixed_od,
+            passed_objects,
+            hardrock_offsets,
+            lazer,
+            accuracy,
+            combo,
+            large_tick_hits,
+            small_tick_hits,
+            slider_end_hits,
+            n_geki,
+            n_katu,
+            n300,
+            n100,
+            n50,
+            misses,
+            legacy_total_score,
+            hitresult_priority,
+            hitresult_generators,
+        } = self;
+
+        if let Some(accuracy) = accuracy {
+            perf = perf.accuracy(*accuracy);
         }
 
-        if let Some(combo) = self.combo {
-            perf = perf.combo(combo);
+        if let Some(combo) = combo {
+            perf = perf.combo(*combo);
         }
 
-        if let Some(large_tick_hits) = self.large_tick_hits {
-            perf = perf.large_tick_hits(large_tick_hits);
+        if let Some(large_tick_hits) = large_tick_hits {
+            perf = perf.large_tick_hits(*large_tick_hits);
         }
 
-        if let Some(small_tick_hits) = self.small_tick_hits {
-            perf = perf.small_tick_hits(small_tick_hits);
+        if let Some(small_tick_hits) = small_tick_hits {
+            perf = perf.small_tick_hits(*small_tick_hits);
         }
 
-        if let Some(slider_end_hits) = self.slider_end_hits {
-            perf = perf.slider_end_hits(slider_end_hits);
+        if let Some(slider_end_hits) = slider_end_hits {
+            perf = perf.slider_end_hits(*slider_end_hits);
         }
 
-        if let Some(n_geki) = self.n_geki {
-            perf = perf.n_geki(n_geki);
+        if let Some(n_geki) = n_geki {
+            perf = perf.n_geki(*n_geki);
         }
 
-        if let Some(n_katu) = self.n_katu {
-            perf = perf.n_katu(n_katu);
+        if let Some(n_katu) = n_katu {
+            perf = perf.n_katu(*n_katu);
         }
 
-        if let Some(n300) = self.n300 {
-            perf = perf.n300(n300);
+        if let Some(n300) = n300 {
+            perf = perf.n300(*n300);
         }
 
-        if let Some(n100) = self.n100 {
-            perf = perf.n100(n100);
+        if let Some(n100) = n100 {
+            perf = perf.n100(*n100);
         }
 
-        if let Some(n50) = self.n50 {
-            perf = perf.n50(n50);
+        if let Some(n50) = n50 {
+            perf = perf.n50(*n50);
         }
 
-        if let Some(misses) = self.misses {
-            perf = perf.misses(misses);
+        if let Some(misses) = misses {
+            perf = perf.misses(*misses);
+        }
+
+        if let Some(legacy_total_score) = legacy_total_score {
+            perf = perf.legacy_total_score(*legacy_total_score);
         }
 
         let difficulty = DifficultyArgs {
-            mods: self.mods.clone(),
-            clock_rate: self.clock_rate,
-            ar: self.ar,
-            fixed_ar: self.fixed_ar,
-            cs: self.cs,
-            fixed_cs: self.fixed_cs,
-            hp: self.hp,
-            fixed_hp: self.fixed_hp,
-            od: self.od,
-            fixed_od: self.fixed_od,
-            passed_objects: self.passed_objects,
-            hardrock_offsets: self.hardrock_offsets,
-            lazer: self.lazer,
+            mods: mods.to_owned(),
+            clock_rate: *clock_rate,
+            ar: *ar,
+            fixed_ar: *fixed_ar,
+            cs: *cs,
+            fixed_cs: *fixed_cs,
+            hp: *hp,
+            fixed_hp: *fixed_hp,
+            od: *od,
+            fixed_od: *fixed_od,
+            passed_objects: *passed_objects,
+            hardrock_offsets: *hardrock_offsets,
+            lazer: *lazer,
         };
 
-        perf.hitresult_priority(self.hitresult_priority)
+        // Bridging runtime values to compile-time types
+        macro_rules! apply_hitresult_generator {
+            // Entry: pass all 4 indices as a "remaining" list
+            () => {
+                apply_hitresult_generator!(@step [0, 1, 2, 3] [])
+            };
+
+            // Still have indices to process
+            ( @step [ $i:tt $(, $rest:tt )* ] [ $( $acc:ty ),* ] ) => {
+                match hitresult_generators[$i] {
+                    None | Some(JsHitResultGenerator::Fast) => {
+                        apply_hitresult_generator!(
+                            @step [$($rest),*] [$($acc,)* Fast]
+                        )
+                    }
+                    Some(JsHitResultGenerator::Closest) => {
+                        apply_hitresult_generator!(
+                            @step [$($rest),*] [$($acc,)* Closest]
+                        )
+                    }
+                }
+            };
+
+            // No indices left: emit the call
+            ( @step [] [$osu:ty, $taiko:ty, $catch:ty, $mania:ty] ) => {
+                perf.hitresult_generator::<Composable<$osu, $taiko, $catch, $mania>>()
+            };
+        }
+
+        perf = apply_hitresult_generator!();
+
+        perf.hitresult_priority(*hitresult_priority)
             .difficulty(difficulty.to_difficulty())
     }
 }
