@@ -137,6 +137,11 @@ export interface DifficultyArgs extends CommonArgs {
 }
 
 /**
+* Either previously calculated attributes or a beatmap.
+*/
+export type MapOrAttributes = DifficultyAttributes | PerformanceAttributes | Beatmap;
+
+/**
 * Arguments to provide the `Performance` constructor.
 */
 export interface PerformanceArgs extends DifficultyArgs {
@@ -216,11 +221,6 @@ export interface PerformanceArgs extends DifficultyArgs {
     /** Four optional generators; one for each mode. */
     hitresultGenerators?: Array<(HitResultGenerator | null)> | null;
 }
-
-/**
-* Either previously calculated attributes or a beatmap.
-*/
-export type MapOrAttributes = DifficultyAttributes | PerformanceAttributes | Beatmap;
 
 /**
 * Common properties to extend other argument interfaces.
@@ -316,11 +316,6 @@ export interface CommonArgs {
 }
 
 /**
-* The content of a `.osu` file either as bytes or string.
-*/
-export type BeatmapContent = Uint8Array | string;
-
-/**
 * Arguments to provide the `BeatmapAttributesBuilder` constructor.
 */
 export interface BeatmapAttributesArgs extends CommonArgs {
@@ -331,6 +326,11 @@ export interface BeatmapAttributesArgs extends CommonArgs {
     /** Start off with a beatmap's attributes, mode, and convert status. */
     map?: Beatmap | null;
 }
+
+/**
+* The content of a `.osu` file either as bytes or string.
+*/
+export type BeatmapContent = Uint8Array | string;
 
 /**
  * All beatmap data that is relevant for difficulty and performance
