@@ -70,6 +70,16 @@ pub struct JsDifficultyAttributes {
     /// Only available for osu!.
     #[wasm_bindgen(js_name = "speedDifficultStrainCount", readonly)]
     pub speed_difficult_strain_count: Option<f64>,
+    /// The difficulty of the reading skill.
+    ///
+    /// Available for osu! and osu!taiko.
+    #[wasm_bindgen(readonly)]
+    pub reading: Option<f64>,
+    /// The number of reading-intensive objects weighted by difficulty.
+    ///
+    /// Only available for osu!.
+    #[wasm_bindgen(js_name = "readingDifficultNoteCount", readonly)]
+    pub reading_difficult_note_count: Option<f64>,
     /// The amount of nested score per object.
     ///
     /// Only available for osu!.
@@ -132,11 +142,6 @@ pub struct JsDifficultyAttributes {
     /// Only available for osu!taiko.
     #[wasm_bindgen(readonly)]
     pub color: Option<f64>,
-    /// The difficulty of the reading skill.
-    ///
-    /// Only available for osu!taiko.
-    #[wasm_bindgen(readonly)]
-    pub reading: Option<f64>,
     /// The amount of fruits.
     ///
     /// Only available for osu!catch.
@@ -220,12 +225,14 @@ impl From<OsuDifficultyAttributes> for JsDifficultyAttributes {
             aim_difficult_slider_count,
             speed,
             flashlight,
+            reading,
             slider_factor,
             aim_top_weighted_slider_factor,
             speed_top_weighted_slider_factor,
             speed_note_count,
             aim_difficult_strain_count,
             speed_difficult_strain_count,
+            reading_difficult_note_count,
             nested_score_per_object,
             legacy_score_base_multiplier,
             maximum_legacy_combo_score,
@@ -250,12 +257,14 @@ impl From<OsuDifficultyAttributes> for JsDifficultyAttributes {
             aim_difficult_slider_count: Some(aim_difficult_slider_count),
             speed: Some(speed),
             flashlight: Some(flashlight),
+            reading: Some(reading),
             slider_factor: Some(slider_factor),
             aim_top_weighted_slider_factor: Some(aim_top_weighted_slider_factor),
             speed_top_weighted_slider_factor: Some(speed_top_weighted_slider_factor),
             speed_note_count: Some(speed_note_count),
             aim_difficult_strain_count: Some(aim_difficult_strain_count),
             speed_difficult_strain_count: Some(speed_difficult_strain_count),
+            reading_difficult_note_count: Some(reading_difficult_note_count),
             nested_score_per_object: Some(nested_score_per_object),
             legacy_score_base_multiplier: Some(legacy_score_base_multiplier),
             maximum_legacy_combo_score: Some(maximum_legacy_combo_score),
@@ -388,6 +397,7 @@ impl TryFrom<JsDifficultyAttributes> for DifficultyAttributes {
             speed_note_count,
             aim_difficult_strain_count,
             speed_difficult_strain_count,
+            reading_difficult_note_count,
             nested_score_per_object,
             legacy_score_base_multiplier,
             maximum_legacy_combo_score,
@@ -470,12 +480,14 @@ impl TryFrom<JsDifficultyAttributes> for DifficultyAttributes {
                         aim_difficult_slider_count,
                         speed,
                         flashlight,
+                        reading: reading.unwrap_or(0.0),
                         slider_factor,
                         aim_top_weighted_slider_factor,
                         speed_top_weighted_slider_factor,
                         speed_note_count,
                         aim_difficult_strain_count,
                         speed_difficult_strain_count,
+                        reading_difficult_note_count: reading_difficult_note_count.unwrap_or(0.0),
                         nested_score_per_object,
                         legacy_score_base_multiplier,
                         maximum_legacy_combo_score,

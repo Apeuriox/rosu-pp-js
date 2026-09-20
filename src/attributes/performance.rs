@@ -44,6 +44,11 @@ pub struct JsPerformanceAttributes {
     /// Only available for osu!.
     #[wasm_bindgen(js_name = "ppSpeed", readonly)]
     pub pp_speed: Option<f64>,
+    /// The reading portion of the final pp.
+    ///
+    /// Only available for osu!.
+    #[wasm_bindgen(js_name = "ppReading", readonly)]
+    pub pp_reading: Option<f64>,
     /// The accuracy portion of the final pp.
     ///
     /// Only available for osu! and osu!taiko.
@@ -138,6 +143,7 @@ impl From<PerformanceAttributes> for JsPerformanceAttributes {
                 pp_acc,
                 pp_aim,
                 pp_flashlight,
+                pp_reading,
                 pp_speed,
                 effective_miss_count,
                 speed_deviation,
@@ -151,6 +157,7 @@ impl From<PerformanceAttributes> for JsPerformanceAttributes {
                 pp_acc: Some(pp_acc),
                 pp_aim: Some(pp_aim),
                 pp_flashlight: Some(pp_flashlight),
+                pp_reading: Some(pp_reading),
                 pp_speed: Some(pp_speed),
                 effective_miss_count: Some(effective_miss_count),
                 speed_deviation,

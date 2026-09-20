@@ -103,6 +103,12 @@ impl JsBeatmap {
         self.inner.hit_objects.len()
     }
 
+    /// Unadjusted hitobject start times in milliseconds, matching `.osu` / audio time.
+    #[wasm_bindgen(js_name = hitObjectTimes, getter)]
+    pub fn hit_object_times(&self) -> Vec<f64> {
+        self.inner.hit_objects.iter().map(|h| h.start_time).collect()
+    }
+
     #[wasm_bindgen(js_name = nCircles, getter)]
     pub fn n_circles(&self) -> usize {
         self.inner
